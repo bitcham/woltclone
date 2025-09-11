@@ -1,29 +1,37 @@
 package cham.woltclone.domain.model.user
 
+import cham.woltclone.domain.user.Address
+import cham.woltclone.domain.user.ContactInfo
+import cham.woltclone.domain.user.Email
+import cham.woltclone.domain.user.Location
+import cham.woltclone.domain.user.Permission
+import cham.woltclone.domain.user.Role
+import cham.woltclone.domain.user.User
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.doubles.shouldBeGreaterThan
 import io.kotest.matchers.doubles.shouldBeLessThan
 import io.kotest.assertions.throwables.shouldThrow
-import java.time.LocalDateTime
 
 class UserTest : BehaviorSpec({
     
     given("a valid user") {
-        val validAddress = Address(
+        val validAddress = Address.create(
             street = "Mannerheimintie 12",
             city = "Helsinki",
             postalCode = "00100"
         )
-        val validContactInfo = ContactInfo(
-            phone = "+1234567890"
+        val validContactInfo = ContactInfo.create(
+            firstName = "John",
+            lastName = "Doe", 
+            phoneNumber = "+1234567890"
         )
-        val validLocation = Location(60.1699, 24.9384) // Helsinki coordinates
+        val validLocation = Location.create(60.1699, 24.9384) // Helsinki coordinates
         
         `when`("creating a user") {
             val user = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo
@@ -40,7 +48,7 @@ class UserTest : BehaviorSpec({
             then("should throw exception for blank password") {
                 shouldThrow<IllegalArgumentException> {
                     User.create(
-                        email = Email("user@example.com"),
+                        email = Email.of("user@example.com"),
                         password = "",
                         address = validAddress,
                         contactInfo = validContactInfo
@@ -51,7 +59,7 @@ class UserTest : BehaviorSpec({
             then("should throw exception for short password") {
                 shouldThrow<IllegalArgumentException> {
                     User.create(
-                        email = Email("user@example.com"),
+                        email = Email.of("user@example.com"),
                         password = "123",
                         address = validAddress,
                         contactInfo = validContactInfo
@@ -62,7 +70,7 @@ class UserTest : BehaviorSpec({
         
         `when`("changing password") {
             val user = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo
@@ -81,7 +89,7 @@ class UserTest : BehaviorSpec({
         
         `when`("changing password with invalid input") {
             val user = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo
@@ -102,7 +110,7 @@ class UserTest : BehaviorSpec({
         
         `when`("updating role") {
             val user = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo
@@ -118,7 +126,7 @@ class UserTest : BehaviorSpec({
         
         `when`("checking permissions") {
             val customerUser = User.create(
-                email = Email("customer@example.com"),
+                email = Email.of("customer@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo,
@@ -135,7 +143,7 @@ class UserTest : BehaviorSpec({
         
         `when`("deactivating user") {
             val user = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo
@@ -150,7 +158,7 @@ class UserTest : BehaviorSpec({
         
         `when`("activating user") {
             val user = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo
@@ -166,7 +174,7 @@ class UserTest : BehaviorSpec({
         
         `when`("creating user with location") {
             val user = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo,
@@ -181,7 +189,7 @@ class UserTest : BehaviorSpec({
         
         `when`("creating user without location") {
             val user = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo
@@ -195,7 +203,7 @@ class UserTest : BehaviorSpec({
         
         `when`("updating user location") {
             val user = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo
@@ -211,14 +219,14 @@ class UserTest : BehaviorSpec({
         
         `when`("calculating distance to another location") {
             val userWithLocation = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo,
                 location = validLocation
             )
             
-            val tampereLocation = Location(61.4978, 23.7610) // Tampere coordinates
+            val tampereLocation = Location.create(61.4978, 23.7610) // Tampere coordinates
             val distance = userWithLocation.getDistanceTo(tampereLocation)
             
             then("should return distance") {
@@ -230,14 +238,14 @@ class UserTest : BehaviorSpec({
         
         `when`("checking delivery radius") {
             val userWithLocation = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo,
                 location = validLocation
             )
             
-            val nearbyLocation = Location(60.2, 24.9) // Close to Helsinki
+            val nearbyLocation = Location.create(60.2, 24.9) // Close to Helsinki
             
             then("should correctly identify if within delivery radius") {
                 userWithLocation.isWithinDeliveryRadius(nearbyLocation, 10.0) shouldBe true
@@ -247,13 +255,13 @@ class UserTest : BehaviorSpec({
         
         `when`("user without location checks delivery radius") {
             val userWithoutLocation = User.create(
-                email = Email("user@example.com"),
+                email = Email.of("user@example.com"),
                 password = "password123",
                 address = validAddress,
                 contactInfo = validContactInfo
             )
             
-            val someLocation = Location(60.2, 24.9)
+            val someLocation = Location.create(60.2, 24.9)
             
             then("should return false") {
                 userWithoutLocation.isWithinDeliveryRadius(someLocation, 10.0) shouldBe false

@@ -1,4 +1,4 @@
-package cham.woltclone.domain.model.user
+package cham.woltclone.domain.user
 
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
 @Embeddable
-data class Address(
+data class Address private constructor(
     @field:NotBlank(message = "Street address cannot be blank")
     @field:Size(max = 255, message = "Street address cannot exceed 255 characters")
     @Column(name = "street_address", nullable = false)
@@ -29,21 +29,26 @@ data class Address(
     companion object {
         const val COUNTRY = "Finland"
         private val FINNISH_POSTAL_CODE_REGEX = Regex("^[0-9]{5}$")
-    }
 
-    init {
-        require(street.isNotBlank()) { "Street address cannot be blank" }
-        require(city.isNotBlank()) { "City cannot be blank" }
-        require(postalCode.isNotBlank()) { "Postal code cannot be blank" }
-        require(isValidFinnishPostalCode(postalCode)) { "Invalid Finnish postal code format" }
+        fun create(
+            street: String,
+            city: String,
+            postalCode: String
+        ): Address {
+            require(street.isNotBlank()) { "Street address cannot be blank" }
+            require(city.isNotBlank()) { "City cannot be blank" }
+            require(postalCode.isNotBlank()) { "Postal code cannot be blank" }
+            require(isValidFinnishPostalCode(postalCode)) { "Invalid Finnish postal code format" }
+            return Address(street, city, postalCode)
+        }
+
+        private fun isValidFinnishPostalCode(code: String): Boolean {
+            return FINNISH_POSTAL_CODE_REGEX.matches(code)
+        }
     }
 
     fun getFullAddress(): String {
         return "$street, $city, $postalCode, $COUNTRY"
-    }
-
-    private fun isValidFinnishPostalCode(code: String): Boolean {
-        return FINNISH_POSTAL_CODE_REGEX.matches(code)
     }
 
     fun isInFinland(): Boolean {

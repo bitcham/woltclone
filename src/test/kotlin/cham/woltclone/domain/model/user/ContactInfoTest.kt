@@ -1,5 +1,6 @@
 package cham.woltclone.domain.model.user
 
+import cham.woltclone.domain.user.ContactInfo
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.assertions.throwables.shouldThrow
@@ -7,24 +8,38 @@ import io.kotest.assertions.throwables.shouldThrow
 class ContactInfoTest : BehaviorSpec({
     
     given("valid contact information") {
+        val validFirstName = "John"
+        val validLastName = "Doe"
         val validPhone = "+1234567890"
         
         `when`("creating contact info") {
-            val contactInfo = ContactInfo(
-                phone = validPhone
+            val contactInfo = ContactInfo.create(
+                firstName = validFirstName,
+                lastName = validLastName,
+                phoneNumber = validPhone
             )
             
             then("contact info should be created successfully") {
-                contactInfo.phone shouldBe validPhone
+                contactInfo.firstName shouldBe validFirstName
+                contactInfo.lastName shouldBe validLastName
+                contactInfo.phoneNumber shouldBe validPhone
+            }
+            
+            then("should provide full name") {
+                contactInfo.getFullName() shouldBe "John Doe"
             }
         }
         
         `when`("getting formatted phone") {
-            val contactInfoWithPlus = ContactInfo(
-                phone = "+1234567890"
+            val contactInfoWithPlus = ContactInfo.create(
+                firstName = "John",
+                lastName = "Doe", 
+                phoneNumber = "+1234567890"
             )
-            val contactInfoWithoutPlus = ContactInfo(
-                phone = "1234567890"
+            val contactInfoWithoutPlus = ContactInfo.create(
+                firstName = "Jane",
+                lastName = "Smith",
+                phoneNumber = "1234567890"
             )
             
             then("should format phone numbers correctly") {
@@ -36,11 +51,37 @@ class ContactInfoTest : BehaviorSpec({
     }
     
     given("invalid contact information") {
+        `when`("creating contact info with blank first name") {
+            then("should throw exception") {
+                shouldThrow<IllegalArgumentException> {
+                    ContactInfo.create(
+                        firstName = "",
+                        lastName = "Doe",
+                        phoneNumber = "+1234567890"
+                    )
+                }
+            }
+        }
+        
+        `when`("creating contact info with blank last name") {
+            then("should throw exception") {
+                shouldThrow<IllegalArgumentException> {
+                    ContactInfo.create(
+                        firstName = "John",
+                        lastName = "",
+                        phoneNumber = "+1234567890"
+                    )
+                }
+            }
+        }
+        
         `when`("creating contact info with blank phone") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    ContactInfo(
-                        phone = ""
+                    ContactInfo.create(
+                        firstName = "John",
+                        lastName = "Doe",
+                        phoneNumber = ""
                     )
                 }
             }
@@ -49,8 +90,10 @@ class ContactInfoTest : BehaviorSpec({
         `when`("creating contact info with invalid phone format") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    ContactInfo(
-                        phone = "12"  // Too short (less than 3 digits)
+                    ContactInfo.create(
+                        firstName = "John",
+                        lastName = "Doe",
+                        phoneNumber = "12"  // Too short (less than 3 digits)
                     )
                 }
             }

@@ -1,9 +1,9 @@
 package cham.woltclone.domain.model.user
 
+import cham.woltclone.domain.user.Permission
+import cham.woltclone.domain.user.Role
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.collections.shouldContain
-import io.kotest.matchers.collections.shouldNotContain
 
 class RoleTest : BehaviorSpec({
     

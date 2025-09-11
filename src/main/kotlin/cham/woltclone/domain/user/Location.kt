@@ -1,4 +1,4 @@
-package cham.woltclone.domain.model.user
+package cham.woltclone.domain.user
 
 import jakarta.persistence.Column
 import jakarta.persistence.Embeddable
@@ -6,8 +6,9 @@ import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import kotlin.math.*
 
+
 @Embeddable
-data class Location(
+data class Location private constructor(
     @field:DecimalMin(value = "59.0", message = "Latitude must be within Finland (59.0 to 70.0)")
     @field:DecimalMax(value = "70.0", message = "Latitude must be within Finland (59.0 to 70.0)")
     @Column(name = "latitude", nullable = false)
@@ -23,14 +24,15 @@ data class Location(
         const val MAX_LATITUDE = 70.0
         const val MIN_LONGITUDE = 19.0
         const val MAX_LONGITUDE = 32.0
-    }
 
-    init {
-        require(latitude in MIN_LATITUDE..MAX_LATITUDE) { 
-            "Latitude must be within Finland boundaries ($MIN_LATITUDE to $MAX_LATITUDE)" 
-        }
-        require(longitude in MIN_LONGITUDE..MAX_LONGITUDE) { 
-            "Longitude must be within Finland boundaries ($MIN_LONGITUDE to $MAX_LONGITUDE)" 
+        fun create(latitude: Double, longitude: Double): Location {
+            require(latitude in MIN_LATITUDE..MAX_LATITUDE) { 
+                "Latitude must be within Finland boundaries ($MIN_LATITUDE to $MAX_LATITUDE)" 
+            }
+            require(longitude in MIN_LONGITUDE..MAX_LONGITUDE) { 
+                "Longitude must be within Finland boundaries ($MIN_LONGITUDE to $MAX_LONGITUDE)" 
+            }
+            return Location(latitude, longitude)
         }
     }
 

@@ -1,5 +1,6 @@
 package cham.woltclone.domain.model.user
 
+import cham.woltclone.domain.user.Email
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.assertions.throwables.shouldThrow
@@ -8,7 +9,7 @@ class EmailTest : BehaviorSpec({
     
     given("valid email addresses") {
         `when`("creating email with valid format") {
-            val email = Email("test@example.com")
+            val email = Email.of("test@example.com")
             
             then("email should be created successfully") {
                 email.value shouldBe "test@example.com"
@@ -21,7 +22,7 @@ class EmailTest : BehaviorSpec({
         `when`("creating email with blank value") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Email("")
+                    Email.of("")
                 }
             }
         }
@@ -29,7 +30,7 @@ class EmailTest : BehaviorSpec({
         `when`("creating email without @ symbol") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Email("invalid-email")
+                    Email.of("invalid-email")
                 }
             }
         }
@@ -37,7 +38,7 @@ class EmailTest : BehaviorSpec({
         `when`("creating email without domain") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Email("test@")
+                    Email.of("test@")
                 }
             }
         }
@@ -45,7 +46,7 @@ class EmailTest : BehaviorSpec({
         `when`("creating email without local part") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Email("@example.com")
+                    Email.of("@example.com")
                 }
             }
         }
@@ -53,7 +54,7 @@ class EmailTest : BehaviorSpec({
         `when`("creating email with invalid domain") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Email("test@invalid")  // No TLD
+                    Email.of("test@invalid")  // No TLD
                 }
             }
         }

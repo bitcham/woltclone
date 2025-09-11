@@ -1,4 +1,4 @@
-package cham.woltclone.domain.model.user
+package cham.woltclone.domain.user
 
 import jakarta.persistence.Column
 import jakarta.persistence.Embedded
@@ -14,9 +14,9 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users")
-data class User(
+class User(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    val id: Long? = null,
 
     @Embedded
     val email: Email,
@@ -74,8 +74,16 @@ data class User(
     fun changePassword(newPassword: String): User {
         require(newPassword.isNotBlank()) { "Password cannot be blank" }
         require(newPassword.length >= 8) { "Password must be at least 8 characters" }
-        return copy(
+        return User(
+            id = id,
+            email = email,
             passwordHash = passwordEncoder.encode(newPassword),
+            role = role,
+            address = address,
+            contactInfo = contactInfo,
+            location = location,
+            isActive = isActive,
+            createdAt = createdAt,
             updatedAt = LocalDateTime.now()
         )
     }
@@ -85,27 +93,93 @@ data class User(
     }
 
     fun updateRole(newRole: Role): User {
-        return copy(role = newRole, updatedAt = LocalDateTime.now())
+        return User(
+            id = id,
+            email = email,
+            passwordHash = passwordHash,
+            role = newRole,
+            address = address,
+            contactInfo = contactInfo,
+            location = location,
+            isActive = isActive,
+            createdAt = createdAt,
+            updatedAt = LocalDateTime.now()
+        )
     }
 
     fun updateAddress(newAddress: Address): User {
-        return copy(address = newAddress, updatedAt = LocalDateTime.now())
+        return User(
+            id = id,
+            email = email,
+            passwordHash = passwordHash,
+            role = role,
+            address = newAddress,
+            contactInfo = contactInfo,
+            location = location,
+            isActive = isActive,
+            createdAt = createdAt,
+            updatedAt = LocalDateTime.now()
+        )
     }
 
     fun updateContactInfo(newContactInfo: ContactInfo): User {
-        return copy(contactInfo = newContactInfo, updatedAt = LocalDateTime.now())
+        return User(
+            id = id,
+            email = email,
+            passwordHash = passwordHash,
+            role = role,
+            address = address,
+            contactInfo = newContactInfo,
+            location = location,
+            isActive = isActive,
+            createdAt = createdAt,
+            updatedAt = LocalDateTime.now()
+        )
     }
 
     fun updateLocation(newLocation: Location?): User {
-        return copy(location = newLocation, updatedAt = LocalDateTime.now())
+        return User(
+            id = id,
+            email = email,
+            passwordHash = passwordHash,
+            role = role,
+            address = address,
+            contactInfo = contactInfo,
+            location = newLocation,
+            isActive = isActive,
+            createdAt = createdAt,
+            updatedAt = LocalDateTime.now()
+        )
     }
 
     fun deactivate(): User {
-        return copy(isActive = false, updatedAt = LocalDateTime.now())
+        return User(
+            id = id,
+            email = email,
+            passwordHash = passwordHash,
+            role = role,
+            address = address,
+            contactInfo = contactInfo,
+            location = location,
+            isActive = false,
+            createdAt = createdAt,
+            updatedAt = LocalDateTime.now()
+        )
     }
 
     fun activate(): User {
-        return copy(isActive = true, updatedAt = LocalDateTime.now())
+        return User(
+            id = id,
+            email = email,
+            passwordHash = passwordHash,
+            role = role,
+            address = address,
+            contactInfo = contactInfo,
+            location = location,
+            isActive = true,
+            createdAt = createdAt,
+            updatedAt = LocalDateTime.now()
+        )
     }
 
     fun hasPermission(permission: Permission): Boolean {
@@ -124,4 +198,19 @@ data class User(
     fun isWithinDeliveryRadius(center: Location, radiusKm: Double): Boolean {
         return location?.isWithinDeliveryRadius(center, radiusKm) ?: false
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as User
+
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package cham.woltclone.domain.model.user
 
+import cham.woltclone.domain.user.Location
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.doubles.shouldBeGreaterThan
@@ -9,8 +10,8 @@ import io.kotest.assertions.throwables.shouldThrow
 class LocationTest : BehaviorSpec({
     
     given("valid Finnish locations") {
-        val helsinkiLocation = Location(60.1699, 24.9384) // Helsinki coordinates
-        val tampereLocation = Location(61.4978, 23.7610) // Tampere coordinates
+        val helsinkiLocation = Location.create(60.1699, 24.9384) // Helsinki coordinates
+        val tampereLocation = Location.create(61.4978, 23.7610) // Tampere coordinates
         
         `when`("creating locations within Finland") {
             then("should be created successfully") {
@@ -45,10 +46,10 @@ class LocationTest : BehaviorSpec({
     
     given("boundary locations") {
         `when`("creating location at Finland's boundaries") {
-            val northernmost = Location(70.0, 25.0) // Northern boundary
-            val southernmost = Location(59.0, 25.0) // Southern boundary
-            val easternmost = Location(65.0, 32.0) // Eastern boundary
-            val westernmost = Location(65.0, 19.0) // Western boundary
+            val northernmost = Location.create(70.0, 25.0) // Northern boundary
+            val southernmost = Location.create(59.0, 25.0) // Southern boundary
+            val easternmost = Location.create(65.0, 32.0) // Eastern boundary
+            val westernmost = Location.create(65.0, 19.0) // Western boundary
             
             then("should be created successfully") {
                 northernmost.isInFinland() shouldBe true
@@ -63,7 +64,7 @@ class LocationTest : BehaviorSpec({
         `when`("creating location with latitude too low") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Location(58.9, 25.0) // Just south of Finland
+                    Location.create(58.9, 25.0) // Just south of Finland
                 }
             }
         }
@@ -71,7 +72,7 @@ class LocationTest : BehaviorSpec({
         `when`("creating location with latitude too high") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Location(70.1, 25.0) // Just north of Finland
+                    Location.create(70.1, 25.0) // Just north of Finland
                 }
             }
         }
@@ -79,7 +80,7 @@ class LocationTest : BehaviorSpec({
         `when`("creating location with longitude too low") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Location(65.0, 18.9) // Just west of Finland
+                    Location.create(65.0, 18.9) // Just west of Finland
                 }
             }
         }
@@ -87,7 +88,7 @@ class LocationTest : BehaviorSpec({
         `when`("creating location with longitude too high") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Location(65.0, 32.1) // Just east of Finland
+                    Location.create(65.0, 32.1) // Just east of Finland
                 }
             }
         }
@@ -97,10 +98,10 @@ class LocationTest : BehaviorSpec({
         `when`("creating location with invalid coordinates") {
             then("should throw exception for extreme values") {
                 shouldThrow<IllegalArgumentException> {
-                    Location(-100.0, 25.0) // Invalid latitude
+                    Location.create(-100.0, 25.0) // Invalid latitude
                 }
                 shouldThrow<IllegalArgumentException> {
-                    Location(65.0, -200.0) // Invalid longitude
+                    Location.create(65.0, -200.0) // Invalid longitude
                 }
             }
         }

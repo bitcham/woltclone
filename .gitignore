@@ -4,12 +4,11 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-claude.md
 task
 feedback
-progess.md
 .claude
 nul
+claude.md
 
 ### STS ###
 .apt_generated

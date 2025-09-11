@@ -1,5 +1,6 @@
 package cham.woltclone.domain.model.user
 
+import cham.woltclone.domain.user.Address
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.shouldBe
 import io.kotest.assertions.throwables.shouldThrow
@@ -12,7 +13,7 @@ class AddressTest : BehaviorSpec({
         val validPostalCode = "00100"
         
         `when`("creating a Finnish address") {
-            val address = Address(
+            val address = Address.create(
                 street = validStreet,
                 city = validCity,
                 postalCode = validPostalCode
@@ -30,7 +31,7 @@ class AddressTest : BehaviorSpec({
         }
         
         `when`("getting full address") {
-            val address = Address(
+            val address = Address.create(
                 street = validStreet,
                 city = validCity,
                 postalCode = validPostalCode
@@ -47,7 +48,7 @@ class AddressTest : BehaviorSpec({
         
         validPostalCodes.forEach { postalCode ->
             `when`("creating address with postal code $postalCode") {
-                val address = Address(
+                val address = Address.create(
                     street = "Test Street 1",
                     city = "Test City",
                     postalCode = postalCode
@@ -64,7 +65,7 @@ class AddressTest : BehaviorSpec({
         `when`("creating address with blank street") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Address(
+                    Address.create(
                         street = "",
                         city = "Helsinki",
                         postalCode = "00100"
@@ -76,7 +77,7 @@ class AddressTest : BehaviorSpec({
         `when`("creating address with blank city") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Address(
+                    Address.create(
                         street = "Mannerheimintie 12",
                         city = "",
                         postalCode = "00100"
@@ -88,7 +89,7 @@ class AddressTest : BehaviorSpec({
         `when`("creating address with blank postal code") {
             then("should throw exception") {
                 shouldThrow<IllegalArgumentException> {
-                    Address(
+                    Address.create(
                         street = "Mannerheimintie 12",
                         city = "Helsinki",
                         postalCode = ""
@@ -112,7 +113,7 @@ class AddressTest : BehaviorSpec({
             `when`("creating address with invalid postal code '$invalidCode'") {
                 then("should throw exception") {
                     shouldThrow<IllegalArgumentException> {
-                        Address(
+                        Address.create(
                             street = "Test Street 1",
                             city = "Helsinki",
                             postalCode = invalidCode

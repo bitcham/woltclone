@@ -77,3 +77,9 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
+
+
+logging:
+  level:
+    org.springframework.transaction.support: TRACE
+    org.springframework.orm.jpa.JpaTransactionManager: DEBUG

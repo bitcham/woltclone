@@ -1,4 +1,4 @@
-package cham.woltclone.domain.model.user
+package cham.woltclone.domain.user
 
 enum class Permission {
     // Customer permissions
